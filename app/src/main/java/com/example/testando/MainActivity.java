@@ -1,6 +1,7 @@
 package com.example.testando;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -10,7 +11,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
-    Button hist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,19 +18,13 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        meuBotao = findViewById(R.id.hist);
-        meuBotao.setOnClickListener(newView.OnClickListener()) {
-            @Override
-            public void OnClick(View v)
-            {
+        Button hist = findViewById(R.id.hist);
+        hist.setOnClickListener(v -> Toast.makeText(MainActivity.this, "Funciona!", Toast.LENGTH_SHORT).show());
 
-                Toast.makeText(MainActivity.this, "Botão Clicando!", Toast.LENGTH_SHORT).show();
-            }
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                return insets;
-            });
-        }
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 }
