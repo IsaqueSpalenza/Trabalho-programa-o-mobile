@@ -6,12 +6,16 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class QuizActivity extends AppCompatActivity {
 
@@ -25,6 +29,12 @@ public class QuizActivity extends AppCompatActivity {
     private int acertos = 0;
     private String tema;
 
+    // Estado da pergunta atual (após embaralhar alternativas)
+    private String[] opcoesExibidas;     // opções já embaralhadas
+    private int correctIndexExibido = -1; // índice correto correspondente às opcoesExibidas (0..3)
+
+    private final Random rng = new Random();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +43,9 @@ public class QuizActivity extends AppCompatActivity {
 
         tema = getIntent().getStringExtra("TOPIC");
         perguntas = QuestionBank.getQuestions(tema);
+
+        // 1) Embaralhar a ORDEM das perguntas (uma vez)
+        Collections.shuffle(perguntas, rng);
 
         tvTema      = findViewById(R.id.tvTema);
         tvPergunta  = findViewById(R.id.tvPergunta);
@@ -50,7 +63,12 @@ public class QuizActivity extends AppCompatActivity {
         btnContinuar.setOnClickListener(v -> {
             int checkedId = rgOpcoes.getCheckedRadioButtonId();
             if (checkedId == -1) {
-                Toast.makeText(this, "Escolha uma alternativa", Toast.LENGTH_SHORT).show();
+                // Sem Toast chamativo; poderíamos desabilitar o botão até escolher algo se preferir
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("Escolha uma alternativa")
+                        .setMessage("Selecione uma opção para continuar.")
+                        .setPositiveButton("Ok", null)
+                        .show();
                 return;
             }
 
@@ -59,37 +77,75 @@ public class QuizActivity extends AppCompatActivity {
                             (checkedId == R.id.rb3) ? 2 : 3;
 
             Question atual = perguntas.get(indice);
-            boolean correto = (escolha == atual.getCorrectIndex());
-            if (correto) {
-                acertos++;
-                Toast.makeText(this, "✔ Resposta correta!", Toast.LENGTH_SHORT).show();
-            } else {
-                String respostaCerta = atual.getOptions()[atual.getCorrectIndex()];
-                Toast.makeText(this, "✘ Resposta incorreta.\nCorreta: " + respostaCerta, Toast.LENGTH_SHORT).show();
-            }
+            boolean correto = (escolha == correctIndexExibido);
 
-            indice++;
-            if (indice < perguntas.size()) {
-                carregarPergunta();
-            } else {
-                Intent i = new Intent(QuizActivity.this, ResultActivity.class);
-                i.putExtra("SCORE", acertos);
-                i.putExtra("TOTAL", perguntas.size());
-                i.putExtra("TOPIC", tema);
-                startActivity(i);
-                finish();
-            }
+            // Mensagem do diálogo
+            String titulo = correto ? "✔ Resposta Correta" : "✘ Resposta Incorreta";
+            String respostaCerta = opcoesExibidas[correctIndexExibido];
+            String msg = correto
+                    ? "Muito bem! Você acertou."
+                    : "A alternativa correta era:\n\n• " + respostaCerta;
+
+            if (correto) acertos++;
+
+            boolean ultima = (indice + 1 >= perguntas.size());
+
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(titulo)
+                    .setMessage(msg)
+                    .setPositiveButton(ultima ? "Finalizar" : "Próxima", (dialog, which) -> {
+                        indice++;
+                        if (indice < perguntas.size()) {
+                            carregarPergunta();
+                        } else {
+                            // Fim do quiz
+                            Intent i = new Intent(QuizActivity.this, ResultActivity.class);
+                            i.putExtra("SCORE", acertos);
+                            i.putExtra("TOTAL", perguntas.size());
+                            i.putExtra("TOPIC", tema);
+                            startActivity(i);
+                            finish();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
         });
     }
 
     private void carregarPergunta() {
         Question q = perguntas.get(indice);
+
+        // 2) Embaralhar as ALTERNATIVAS desta pergunta de forma segura
+        //    - criamos uma lista com (texto, eraCorreta?)
+        List<Alt> pool = new ArrayList<>(4);
+        String[] ops = q.getOptions();
+        for (int i = 0; i < 4; i++) {
+            pool.add(new Alt(ops[i], i == q.getCorrectIndex()));
+        }
+        Collections.shuffle(pool, rng);
+
+        // Preenche as opções exibidas e descobre o índice correto pós-embaralhamento
+        opcoesExibidas = new String[4];
+        correctIndexExibido = -1;
+        for (int i = 0; i < 4; i++) {
+            opcoesExibidas[i] = pool.get(i).text;
+            if (pool.get(i).isCorrect) correctIndexExibido = i;
+        }
+
+        // Atualiza UI
         tvPergunta.setText(q.getText());
-        rb1.setText(q.getOptions()[0]);
-        rb2.setText(q.getOptions()[1]);
-        rb3.setText(q.getOptions()[2]);
-        rb4.setText(q.getOptions()[3]);
+        rb1.setText(opcoesExibidas[0]);
+        rb2.setText(opcoesExibidas[1]);
+        rb3.setText(opcoesExibidas[2]);
+        rb4.setText(opcoesExibidas[3]);
         rgOpcoes.clearCheck();
         tvProgresso.setText((indice + 1) + " / " + perguntas.size());
+    }
+
+    // Struct simples para embaralhar mantendo a marca de "correta"
+    private static class Alt {
+        String text;
+        boolean isCorrect;
+        Alt(String t, boolean c) { text = t; isCorrect = c; }
     }
 }
