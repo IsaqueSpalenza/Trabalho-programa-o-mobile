@@ -126,7 +126,7 @@ public class QuestionBank {
                 2
         ));
 
-        // === Império Romano ===
+        // --- Império Romano ---
         list.add(new Question(
                 "Quem é geralmente reconhecido como o primeiro imperador romano?",
                 new String[]{
@@ -210,7 +210,7 @@ public class QuestionBank {
                 1
         ));
 
-        // --- Guerra de Inverno (Finlândia × URSS, 1939–1940) — NOVAS ---
+        // --- Guerra de Inverno (Finlândia × URSS, 1939–1940) ---
         list.add(new Question(
                 "A Guerra de Inverno entre Finlândia e União Soviética ocorreu em:",
                 new String[]{
@@ -289,8 +289,6 @@ public class QuestionBank {
 
     /* =========================
      *       MATEMÁTICA
-     *  (2º grau, aritmética,
-     *       álgebra)
      * ========================= */
     private static List<Question> matematica() {
         List<Question> list = new ArrayList<>();

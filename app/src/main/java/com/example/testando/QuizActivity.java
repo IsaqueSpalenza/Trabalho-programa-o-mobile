@@ -29,9 +29,9 @@ public class QuizActivity extends AppCompatActivity {
     private int acertos = 0;
     private String tema;
 
-    // Estado da pergunta atual (após embaralhar alternativas)
+    // Estado da pergunta atual
     private String[] opcoesExibidas;     // opções já embaralhadas
-    private int correctIndexExibido = -1; // índice correto correspondente às opcoesExibidas (0..3)
+    private int correctIndexExibido = -1; // índice correto correspondente às opcoesExibidas
 
     private final Random rng = new Random();
 
@@ -44,7 +44,7 @@ public class QuizActivity extends AppCompatActivity {
         tema = getIntent().getStringExtra("TOPIC");
         perguntas = QuestionBank.getQuestions(tema);
 
-        // 1) Embaralhar a ORDEM das perguntas (uma vez)
+        // Embaralhar a ordem das perguntas
         Collections.shuffle(perguntas, rng);
 
         tvTema      = findViewById(R.id.tvTema);
@@ -63,7 +63,7 @@ public class QuizActivity extends AppCompatActivity {
         btnContinuar.setOnClickListener(v -> {
             int checkedId = rgOpcoes.getCheckedRadioButtonId();
             if (checkedId == -1) {
-                // Sem Toast chamativo; poderíamos desabilitar o botão até escolher algo se preferir
+
                 new MaterialAlertDialogBuilder(this)
                         .setTitle("Escolha uma alternativa")
                         .setMessage("Selecione uma opção para continuar.")
@@ -115,8 +115,7 @@ public class QuizActivity extends AppCompatActivity {
     private void carregarPergunta() {
         Question q = perguntas.get(indice);
 
-        // 2) Embaralhar as ALTERNATIVAS desta pergunta de forma segura
-        //    - criamos uma lista com (texto, eraCorreta?)
+        // Embaralhar as alternativas desta pergunta de forma segura
         List<Alt> pool = new ArrayList<>(4);
         String[] ops = q.getOptions();
         for (int i = 0; i < 4; i++) {
@@ -124,7 +123,7 @@ public class QuizActivity extends AppCompatActivity {
         }
         Collections.shuffle(pool, rng);
 
-        // Preenche as opções exibidas e descobre o índice correto pós-embaralhamento
+        // Preenche as opções exibidas e descobre o índice correto após embaralhar
         opcoesExibidas = new String[4];
         correctIndexExibido = -1;
         for (int i = 0; i < 4; i++) {
@@ -132,7 +131,6 @@ public class QuizActivity extends AppCompatActivity {
             if (pool.get(i).isCorrect) correctIndexExibido = i;
         }
 
-        // Atualiza UI
         tvPergunta.setText(q.getText());
         rb1.setText(opcoesExibidas[0]);
         rb2.setText(opcoesExibidas[1]);
