@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">Testando</string>
-    <string name="titulo_quiz" translatable="false">Quiz de Conhecimentos Gerais</string>
-    <string name="btn_historia" translatable="false">História</string>
-    <string name="btn_matematica" translatable="false">Matemática</string>
-</resources>

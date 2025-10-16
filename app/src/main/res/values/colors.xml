@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="btn_color">#7E57C2</color>      <!-- roxo -->
-    <color name="btn_text_color">#FFFFFF</color> <!-- branco -->
-</resources>
