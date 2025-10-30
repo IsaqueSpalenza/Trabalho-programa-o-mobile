@@ -1,6 +1,3 @@
 <resources>
-    <string name="app_name">Filmes</string>
-    <string name="filmes">Filmes</string>
-    <string name="titulo">Título</string>
-    <string name="pontuacao">Pontuação</string>
+    <string name="app_name">My Application</string>
 </resources>
