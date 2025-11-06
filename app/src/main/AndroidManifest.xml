@@ -30,5 +30,8 @@
         <activity android:name=".ui.user.UserSelectActivity" />
         <activity android:name=".ui.stats.StatsActivity" />
 
+        <activity android:name=".ui.admin.AdminActivity" />
+        <activity android:name=".ui.admin.EditQuestionActivity" />
+
     </application>
 </manifest>

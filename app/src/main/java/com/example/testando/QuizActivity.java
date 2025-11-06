@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.testando.data.QuestionRepository;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
@@ -28,10 +29,11 @@ public class QuizActivity extends AppCompatActivity {
     private int indice = 0;
     private int acertos = 0;
     private String tema;
+    private int dificuldade; // ⬅️ agora usamos isso
 
     // Estado da pergunta atual
-    private String[] opcoesExibidas;     // opções já embaralhadas
-    private int correctIndexExibido = -1; // índice correto correspondente às opcoesExibidas
+    private String[] opcoesExibidas;
+    private int correctIndexExibido = -1;
 
     private final Random rng = new Random();
 
@@ -41,10 +43,21 @@ public class QuizActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quiz);
 
+        // Recebe dados enviados pelo MainActivity
         tema = getIntent().getStringExtra("TOPIC");
-        perguntas = QuestionBank.getQuestions(tema);
+        dificuldade = getIntent().getIntExtra("DIFFICULTY", QuestionRepository.D_NORMAL);
 
-        // Embaralhar a ordem das perguntas
+        // Agora buscamos do banco:
+        QuestionRepository repo = new QuestionRepository(this);
+        perguntas = repo.getQuestionsByTopicAndDifficulty(tema, dificuldade);
+
+        // Caso o banco ainda não tenha perguntas, carrega o seed automaticamente:
+        if (perguntas.isEmpty()) {
+            repo.seedIfEmpty();
+            perguntas = repo.getQuestionsByTopicAndDifficulty(tema, dificuldade);
+        }
+
+        // Embaralha a ordem das perguntas
         Collections.shuffle(perguntas, rng);
 
         tvTema      = findViewById(R.id.tvTema);
@@ -57,13 +70,14 @@ public class QuizActivity extends AppCompatActivity {
         rb4         = findViewById(R.id.rb4);
         btnContinuar= findViewById(R.id.btnContinuar);
 
-        tvTema.setText("Tema: " + tema);
+        tvTema.setText("Tema: " + tema + "  •  Dificuldade: " +
+                (dificuldade == QuestionRepository.D_NORMAL ? "Normal" : "Avançado"));
+
         carregarPergunta();
 
         btnContinuar.setOnClickListener(v -> {
             int checkedId = rgOpcoes.getCheckedRadioButtonId();
             if (checkedId == -1) {
-
                 new MaterialAlertDialogBuilder(this)
                         .setTitle("Escolha uma alternativa")
                         .setMessage("Selecione uma opção para continuar.")
@@ -76,29 +90,23 @@ public class QuizActivity extends AppCompatActivity {
                     (checkedId == R.id.rb2) ? 1 :
                             (checkedId == R.id.rb3) ? 2 : 3;
 
-            Question atual = perguntas.get(indice);
             boolean correto = (escolha == correctIndexExibido);
-
-            // Mensagem do diálogo
-            String titulo = correto ? "✔ Resposta Correta" : "✘ Resposta Incorreta";
             String respostaCerta = opcoesExibidas[correctIndexExibido];
-            String msg = correto
-                    ? "Muito bem! Você acertou."
-                    : "A alternativa correta era:\n\n• " + respostaCerta;
 
             if (correto) acertos++;
 
             boolean ultima = (indice + 1 >= perguntas.size());
 
             new MaterialAlertDialogBuilder(this)
-                    .setTitle(titulo)
-                    .setMessage(msg)
+                    .setTitle(correto ? "✔ Resposta Correta" : "✘ Resposta Incorreta")
+                    .setMessage(correto
+                            ? "Muito bem! Você acertou."
+                            : "A alternativa correta era:\n\n• " + respostaCerta)
                     .setPositiveButton(ultima ? "Finalizar" : "Próxima", (dialog, which) -> {
                         indice++;
                         if (indice < perguntas.size()) {
                             carregarPergunta();
                         } else {
-                            // Fim do quiz
                             Intent i = new Intent(QuizActivity.this, ResultActivity.class);
                             i.putExtra("SCORE", acertos);
                             i.putExtra("TOTAL", perguntas.size());
@@ -115,7 +123,7 @@ public class QuizActivity extends AppCompatActivity {
     private void carregarPergunta() {
         Question q = perguntas.get(indice);
 
-        // Embaralhar as alternativas desta pergunta de forma segura
+        // Embaralhar mantendo índice correto consistente
         List<Alt> pool = new ArrayList<>(4);
         String[] ops = q.getOptions();
         for (int i = 0; i < 4; i++) {
@@ -123,7 +131,6 @@ public class QuizActivity extends AppCompatActivity {
         }
         Collections.shuffle(pool, rng);
 
-        // Preenche as opções exibidas e descobre o índice correto após embaralhar
         opcoesExibidas = new String[4];
         correctIndexExibido = -1;
         for (int i = 0; i < 4; i++) {
@@ -137,10 +144,11 @@ public class QuizActivity extends AppCompatActivity {
         rb3.setText(opcoesExibidas[2]);
         rb4.setText(opcoesExibidas[3]);
         rgOpcoes.clearCheck();
+
         tvProgresso.setText((indice + 1) + " / " + perguntas.size());
     }
 
-    // Struct simples para embaralhar mantendo a marca de "correta"
+    // Estrutura interna para embaralhar mantendo a informação da correta
     private static class Alt {
         String text;
         boolean isCorrect;

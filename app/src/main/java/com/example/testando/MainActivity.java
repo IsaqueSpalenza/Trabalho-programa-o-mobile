@@ -12,12 +12,14 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.testando.data.QuestionRepository;
 import com.example.testando.data.SessionPrefs;
 import com.example.testando.data.User;
 import com.example.testando.data.UserRepository;
 import com.example.testando.ui.stats.StatsActivity;
 import com.example.testando.ui.user.UserSelectActivity;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,20 +39,58 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) setSupportActionBar(toolbar);
 
+        // --- Atalho secreto: 5 toques na Toolbar abre a AdminActivity ---
+        if (toolbar != null) {
+            final int[] taps = {0};
+            final Runnable resetTaps = () -> taps[0] = 0; // zera após 1.5s sem toques
+
+            toolbar.setOnClickListener(v -> {
+                taps[0]++;
+                if (taps[0] >= 5) {
+                    taps[0] = 0;
+                    startActivity(new Intent(
+                            MainActivity.this,
+                            com.example.testando.ui.admin.AdminActivity.class
+                    ));
+                }
+                // reinicia o timer de 1.5s sempre que tocar
+                toolbar.removeCallbacks(resetTaps);
+                toolbar.postDelayed(resetTaps, 1500);
+            });
+        }
+
         btnHistoria     = findViewById(R.id.btnHistoria);
         btnMatematica   = findViewById(R.id.btnMatematica);
         btnEstatisticas = findViewById(R.id.btnEstatisticas);
 
-        ensureUserSelected();          // garante um usuário ativo
-        updateUserSubtitleOnToolbar(); // mostra nome do usuário (se houver toolbar)
+        ensureUserSelected();
+        updateUserSubtitleOnToolbar();
 
+        // ---- Antes do quiz, pergunta a dificuldade ----
         View.OnClickListener abrirQuiz = v -> {
+
             long uid = SessionPrefs.getCurrentUserId(this);
             if (uid <= 0) { ensureUserSelected(); return; }
+
             String tema = (v.getId() == R.id.btnHistoria) ? "Historia" : "Matematica";
-            Intent i = new Intent(MainActivity.this, QuizActivity.class);
-            i.putExtra("TOPIC", tema);
-            startActivity(i);
+
+            final String[] labels = {"Normal", "Avançado"};
+            final int[] values = {QuestionRepository.D_NORMAL, QuestionRepository.D_AVANCADO};
+
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("Escolher dificuldade")
+                    .setSingleChoiceItems(labels, 0, null) // default = Normal
+                    .setPositiveButton("Continuar", (d, w) -> {
+                        int index = ((androidx.appcompat.app.AlertDialog)d).getListView().getCheckedItemPosition();
+                        int diff = values[index < 0 ? 0 : index];
+
+                        Intent i = new Intent(MainActivity.this, QuizActivity.class);
+                        i.putExtra("TOPIC", tema);
+                        i.putExtra("DIFFICULTY", diff); // envia a dificuldade
+                        startActivity(i);
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
         };
 
         btnHistoria.setOnClickListener(abrirQuiz);
@@ -88,21 +128,15 @@ public class MainActivity extends AppCompatActivity {
             User u = userRepo.getById(uid);
             if (u != null) sub = "Usuário: " + u.name;
         }
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setSubtitle(sub);
-        } else {
-            toolbar.setSubtitle(sub);
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().setSubtitle(sub);
+        else toolbar.setSubtitle(sub);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Caso o usuário tenha sido trocado/ criado na tela de gestão
         long uid = SessionPrefs.getCurrentUserId(this);
-        if (uid <= 0) {
-            startActivity(new Intent(this, UserSelectActivity.class));
-        }
+        if (uid <= 0) startActivity(new Intent(this, UserSelectActivity.class));
         updateUserSubtitleOnToolbar();
     }
 
