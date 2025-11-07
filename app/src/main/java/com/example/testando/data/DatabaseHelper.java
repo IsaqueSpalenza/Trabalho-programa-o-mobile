@@ -50,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
-        // Garantir FKs (delete em cascata, etc.)
+        // Garantir FKs (delete em cascata)
         db.setForeignKeyConstraintsEnabled(true);
     }
 

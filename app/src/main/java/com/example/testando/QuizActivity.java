@@ -29,7 +29,7 @@ public class QuizActivity extends AppCompatActivity {
     private int indice = 0;
     private int acertos = 0;
     private String tema;
-    private int dificuldade; // ⬅️ agora usamos isso
+    private int dificuldade;
 
     // Estado da pergunta atual
     private String[] opcoesExibidas;
@@ -47,7 +47,7 @@ public class QuizActivity extends AppCompatActivity {
         tema = getIntent().getStringExtra("TOPIC");
         dificuldade = getIntent().getIntExtra("DIFFICULTY", QuestionRepository.D_NORMAL);
 
-        // Agora buscamos do banco:
+        // busca do banco:
         QuestionRepository repo = new QuestionRepository(this);
         perguntas = repo.getQuestionsByTopicAndDifficulty(tema, dificuldade);
 
@@ -123,7 +123,7 @@ public class QuizActivity extends AppCompatActivity {
     private void carregarPergunta() {
         Question q = perguntas.get(indice);
 
-        // Embaralhar mantendo índice correto consistente
+        // Embaralhar mantendo índice correto
         List<Alt> pool = new ArrayList<>(4);
         String[] ops = q.getOptions();
         for (int i = 0; i < 4; i++) {
@@ -148,7 +148,7 @@ public class QuizActivity extends AppCompatActivity {
         tvProgresso.setText((indice + 1) + " / " + perguntas.size());
     }
 
-    // Estrutura interna para embaralhar mantendo a informação da correta
+    // embaralhar mantendo a informação da correta
     private static class Alt {
         String text;
         boolean isCorrect;

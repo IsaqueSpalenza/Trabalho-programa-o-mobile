@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         updateUserSubtitleOnToolbar();
     }
 
-    // Menu de troca/gestão de usuário (item: action_switch_user)
+    // Menu para trocar/gestão de usuário (action_switch_user)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
