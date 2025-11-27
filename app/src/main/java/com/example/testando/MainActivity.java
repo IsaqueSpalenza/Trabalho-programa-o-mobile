@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         ensureUserSelected();
         updateUserSubtitleOnToolbar();
 
-        // ---- Antes do quiz, pergunta a dificuldade ----
+        // Antes do quiz, pergunta a dificuldade
         View.OnClickListener abrirQuiz = v -> {
 
             long uid = SessionPrefs.getCurrentUserId(this);
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /** Se não houver usuário selecionado (ou foi apagado), abre a tela de seleção/criação. */
+    // Se não houver usuário selecionado (ou foi apagado), abre a tela de seleção/criação.
     private void ensureUserSelected() {
         long uid = SessionPrefs.getCurrentUserId(this);
         if (uid <= 0) {
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** Atualiza o subtítulo da Toolbar com o nome do usuário atual (se houver toolbar no layout). */
+    // Atualiza o subtítulo da Toolbar com o nome do usuário atual
     private void updateUserSubtitleOnToolbar() {
         if (toolbar == null) return;
         long uid = SessionPrefs.getCurrentUserId(this);

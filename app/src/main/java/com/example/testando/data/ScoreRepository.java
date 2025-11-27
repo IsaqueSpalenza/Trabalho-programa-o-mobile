@@ -24,7 +24,7 @@ public class ScoreRepository {
         return db.insert(DatabaseHelper.T_SCORES, null, cv);
     }
 
-    /** Agregado por tópico: soma de acertos e total do usuário. */
+    //agregado por tópico: soma de acertos e total do usuário
     public Map<String, int[]> getTotalsByTopic(long userId) {
         SQLiteDatabase db = dbh.getReadableDatabase();
         String sql = "SELECT " + DatabaseHelper.C_SCORE_TOPIC + ", SUM(" + DatabaseHelper.C_SCORE_CORRECT + "), SUM(" + DatabaseHelper.C_SCORE_TOTAL + ")" +

@@ -14,13 +14,11 @@ public class QuestionBank {
         return new ArrayList<>();
     }
 
-    /* =========================
-     *        HISTÓRIA
-     * ========================= */
+    // HISTÓRIA
     private static List<Question> historia() {
         List<Question> list = new ArrayList<>();
 
-        // --- Batalha de Viena (1683) ---
+        // Batalha de Viena (1683)
         list.add(new Question(
                 "A Batalha de Viena (1683) é conhecida principalmente por:",
                 new String[]{
@@ -52,7 +50,7 @@ public class QuestionBank {
                 1
         ));
 
-        // --- Califado Omíada ---
+        // Califado Omíada
         list.add(new Question(
                 "Qual era a capital do Califado Omíada (século VII–VIII) no Oriente?",
                 new String[]{
@@ -84,7 +82,7 @@ public class QuestionBank {
                 1
         ));
 
-        // --- Império Sassânida ---
+        // Império Sassânida
         list.add(new Question(
                 "Qual era a religião fortemente associada ao Império Sassânida?",
                 new String[]{
@@ -126,7 +124,7 @@ public class QuestionBank {
                 2
         ));
 
-        // --- Império Romano ---
+        // Império Romano
         list.add(new Question(
                 "Quem é geralmente reconhecido como o primeiro imperador romano?",
                 new String[]{
@@ -198,7 +196,7 @@ public class QuestionBank {
                 0
         ));
 
-        // --- Ea-Nasir ---
+        // Ea-Nasir
         list.add(new Question(
                 "Pelo que Ea-Nasir, mercador da Mesopotâmia, ficou famoso nos estudos históricos?",
                 new String[]{
@@ -210,7 +208,7 @@ public class QuestionBank {
                 1
         ));
 
-        // --- Guerra de Inverno (Finlândia × URSS, 1939–1940) ---
+        // Guerra de Inverno (Finlândia × URSS, 1939–1940)
         list.add(new Question(
                 "A Guerra de Inverno entre Finlândia e União Soviética ocorreu em:",
                 new String[]{
@@ -262,7 +260,7 @@ public class QuestionBank {
                 2
         ));
 
-        // Complementares de História
+        // Revolução Francesa
         list.add(new Question(
                 "A Revolução Francesa iniciou-se em:",
                 new String[]{
@@ -287,13 +285,11 @@ public class QuestionBank {
         return list;
     }
 
-    /* =========================
-     *       MATEMÁTICA
-     * ========================= */
+    // MATEMÁTICA
     private static List<Question> matematica() {
         List<Question> list = new ArrayList<>();
 
-        // --- Equação de 2º grau ---
+        // Equação de 2º grau
         list.add(new Question(
                 "Na equação ax² + bx + c = 0, o discriminante (Δ) é:",
                 new String[]{
@@ -345,7 +341,7 @@ public class QuestionBank {
                 0
         ));
 
-        // --- Aritmética ---
+        // Aritmética
         list.add(new Question(
                 "Qual é 25% de 200?",
                 new String[]{
@@ -387,7 +383,7 @@ public class QuestionBank {
                 3
         ));
 
-        // --- Álgebra (1º grau, operações algébricas) ---
+        // Álgebra (1º grau, operações algébricas)
         list.add(new Question(
                 "Resolva: 3x - 5 = 1",
                 new String[]{

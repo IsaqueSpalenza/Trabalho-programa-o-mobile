@@ -18,7 +18,7 @@ public class QuestionRepository {
 
     public QuestionRepository(Context ctx) { this.dbh = new DatabaseHelper(ctx); }
 
-    /* ---------- Tópicos (fixos) ---------- */
+    // tópicos (fixos)
     public long upsertTopic(String name) {
         if (!"Historia".equals(name) && !"Matematica".equals(name)) {
             throw new IllegalArgumentException("Tema inválido. Use 'Historia' ou 'Matematica'.");
@@ -35,7 +35,7 @@ public class QuestionRepository {
         return db.insert(DatabaseHelper.T_TOPICS, null, cv);
     }
 
-    /* ---------- Inserção (jogo) ---------- */
+    // inserção (jogo)
     public long insertQuestionWithOptions(long topicId, String text, String[] options, int correctIndex, int difficulty) {
         if (options == null || options.length != 4) throw new IllegalArgumentException("São esperadas 4 opções");
         if (correctIndex < 0 || correctIndex > 3) throw new IllegalArgumentException("correctIndex deve ser 0..3");
@@ -63,7 +63,7 @@ public class QuestionRepository {
         }
     }
 
-    /* ---------- Leitura para o jogo ---------- */
+    // leitura para o jogo
     public List<Question> getQuestionsByTopicAndDifficulty(String topicName, int difficulty) {
         SQLiteDatabase db = dbh.getReadableDatabase();
         List<Question> out = new ArrayList<>();
@@ -263,7 +263,7 @@ public class QuestionRepository {
         // options caem via FK ON DELETE CASCADE
     }
 
-    /* ---------- Seed opcional ---------- */
+    /* ---------- seed opcional ---------- */
     public void seedIfEmpty() {
         SQLiteDatabase db = dbh.getReadableDatabase();
         long count = 0;

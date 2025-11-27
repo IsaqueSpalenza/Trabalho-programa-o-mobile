@@ -48,7 +48,7 @@ public class EditQuestionActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_dropdown_item,
                 new String[]{"Normal", "Avançado"}));
 
-        // editar?
+
         qid = getIntent().getLongExtra("QID", -1);
         if (qid > 0) {
             QuestionRepository.AdminQuestion aq = repo.getAdminById(qid);

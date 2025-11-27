@@ -31,7 +31,7 @@ public class QuizActivity extends AppCompatActivity {
     private String tema;
     private int dificuldade;
 
-    // Estado da pergunta atual
+    // estado da pergunta atual
     private String[] opcoesExibidas;
     private int correctIndexExibido = -1;
 
@@ -43,7 +43,7 @@ public class QuizActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quiz);
 
-        // Recebe dados enviados pelo MainActivity
+        // recebe dados enviados pelo MainActivity
         tema = getIntent().getStringExtra("TOPIC");
         dificuldade = getIntent().getIntExtra("DIFFICULTY", QuestionRepository.D_NORMAL);
 
@@ -51,13 +51,13 @@ public class QuizActivity extends AppCompatActivity {
         QuestionRepository repo = new QuestionRepository(this);
         perguntas = repo.getQuestionsByTopicAndDifficulty(tema, dificuldade);
 
-        // Caso o banco ainda não tenha perguntas, carrega o seed automaticamente:
+        // caso o banco ainda não tenha perguntas, carrega o seed automaticamente:
         if (perguntas.isEmpty()) {
             repo.seedIfEmpty();
             perguntas = repo.getQuestionsByTopicAndDifficulty(tema, dificuldade);
         }
 
-        // Embaralha a ordem das perguntas
+        // embaralha a ordem das perguntas
         Collections.shuffle(perguntas, rng);
 
         tvTema      = findViewById(R.id.tvTema);
@@ -111,6 +111,7 @@ public class QuizActivity extends AppCompatActivity {
                             i.putExtra("SCORE", acertos);
                             i.putExtra("TOTAL", perguntas.size());
                             i.putExtra("TOPIC", tema);
+                            i.putExtra("DIFFICULTY", dificuldade);
                             startActivity(i);
                             finish();
                         }
@@ -123,7 +124,7 @@ public class QuizActivity extends AppCompatActivity {
     private void carregarPergunta() {
         Question q = perguntas.get(indice);
 
-        // Embaralhar mantendo índice correto
+        // embaralhar mantendo índice correto
         List<Alt> pool = new ArrayList<>(4);
         String[] ops = q.getOptions();
         for (int i = 0; i < 4; i++) {
