@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) setSupportActionBar(toolbar);
 
-        // --- Atalho secreto: 5 toques na Toolbar abre a AdminActivity ---
+        // "atalho secreto:" 5 toques na Toolbar abre a AdminActivity
         if (toolbar != null) {
             final int[] taps = {0};
             final Runnable resetTaps = () -> taps[0] = 0; // zera após 1.5s sem toques
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Se não houver usuário selecionado (ou foi apagado), abre a tela de seleção/criação.
+    // Se não houver usuário selecionado (ou caso tenha sido apagado), abre a tela de seleção/criação.
     private void ensureUserSelected() {
         long uid = SessionPrefs.getCurrentUserId(this);
         if (uid <= 0) {
