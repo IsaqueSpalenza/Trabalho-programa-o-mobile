@@ -87,19 +87,66 @@ public class UserSelectActivity extends AppCompatActivity implements UsersAdapte
         finish(); // volta para MainActivity
     }
 
-    @Override
-    public void onUserLongClick(User u) {
+    private void showEditDialog(User u) {
+        final com.google.android.material.textfield.TextInputLayout til =
+                new com.google.android.material.textfield.TextInputLayout(this);
+        final EditText et = new EditText(this);
+        et.setHint("Nome do usuário");
+        et.setSingleLine(true);
+        et.setFilters(new InputFilter[]{new InputFilter.LengthFilter(24)});
+        et.setText(u.name);
+        et.setSelection(et.getText().length());
+        til.addView(et);
+
         new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle("Remover usuário?")
-                .setMessage("Excluir \"" + u.name + "\" e suas pontuações?")
-                .setPositiveButton("Excluir", (d, w) -> {
-                    repo.deleteById(u.id);
-                    if (SessionPrefs.getCurrentUserId(this) == u.id) {
-                        SessionPrefs.clear(this);
+                .setTitle("Editar usuário")
+                .setView(til)
+                .setPositiveButton("Salvar", (d, w) -> {
+                    String name = et.getText().toString().trim();
+                    if (TextUtils.isEmpty(name)) {
+                        Toast.makeText(this, "Digite um nome", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    loadUsers();
+                    try {
+                        repo.updateUserName(u.id, name);
+                        loadUsers();
+                        Toast.makeText(this, "Nome atualizado", Toast.LENGTH_SHORT).show();
+                    } catch (Exception ex) {
+                        Toast.makeText(this, "Erro: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
+
+
+    @Override
+    public void onUserLongClick(User u) {
+        String[] opcoes = {"Editar usuário", "Excluir usuário"};
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(u.name)
+                .setItems(opcoes, (dialog, which) -> {
+                    if (which == 0) {
+                        // Editar
+                        showEditDialog(u);
+                    } else if (which == 1) {
+                        // Excluir (mesma lógica que você já tinha)
+                        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                                .setTitle("Remover usuário?")
+                                .setMessage("Excluir \"" + u.name + "\" e suas pontuações?")
+                                .setPositiveButton("Excluir", (d2, w2) -> {
+                                    repo.deleteById(u.id);
+                                    if (SessionPrefs.getCurrentUserId(this) == u.id) {
+                                        SessionPrefs.clear(this);
+                                    }
+                                    loadUsers();
+                                })
+                                .setNegativeButton("Cancelar", null)
+                                .show();
+                    }
+                })
+                .show();
+    }
+
 }

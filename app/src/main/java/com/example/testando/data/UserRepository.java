@@ -56,4 +56,22 @@ public class UserRepository {
         db.delete(DatabaseHelper.T_USERS, DatabaseHelper.C_USER_ID + "=?", new String[]{String.valueOf(id)});
         // cascata nos scores via FK
     }
+
+    public void updateUserName(long id, String newName) throws Exception {
+        SQLiteDatabase db = dbh.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseHelper.C_USER_NAME, newName.trim());
+
+        int rows = db.update(
+                DatabaseHelper.T_USERS,
+                cv,
+                DatabaseHelper.C_USER_ID + "=?",
+                new String[]{String.valueOf(id)}
+        );
+
+        if (rows == 0) {
+            throw new Exception("Usuário não encontrado");
+        }
+    }
+
 }
